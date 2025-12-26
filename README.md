@@ -23,7 +23,7 @@ Dieses Repository enthält NOVA-Chat. Bitte lesen Sie die AGB (`agb.html`) und d
 
 2. Falls Sie das Repository als ZIP-Datei heruntergeladen haben, entpacken Sie diese auf Ihrem Computer.
 
-3. Öffnen Sie die Datei `Main.pyw` mit einem Browser, um den Chat zu benutzen.
+3. Öffnen Sie die Datei `Main.pyw` um den Chat zu benutzen.
 
 
 ## 4. Requirements 
@@ -47,7 +47,7 @@ Dieses Repository enthält NOVA-Chat. Bitte lesen Sie die AGB (`agb.html`) und d
 
 ## 6. Haftung
 
-Das Wiki wird **ohne Gewährleistung** bereitgestellt.  
+Der Chat wird **ohne Gewährleistung** bereitgestellt.  
 Der Autor übernimmt **keine Haftung** für Schäden, Verluste oder sonstige Nachteile, die durch die Nutzung entstehen.  
 Die Nutzung erfolgt auf **eigenes Risiko**.
 
