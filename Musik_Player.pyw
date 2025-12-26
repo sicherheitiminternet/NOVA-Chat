@@ -6,19 +6,13 @@ import os
 from mutagen import File
 import json
 from supabase import create_client
-from dotenv import load_dotenv
 
 # =====================
 # Supabase Setup
 # =====================
-
-load_dotenv()
-
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
-
+SUPABASE_URL = "https://vaxelbftwysyecnwwbpq.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZheGVsYmZ0d3lzeWVjbnd3YnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NjI3NDgsImV4cCI6MjA4MjMzODc0OH0.cEE1dJ8I1bJ0m9cR3ezpVGILApQN_crxWpsrwe7hXi8"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
 
 OWNER_USERNAME = "Owner"
 USER_JSON_FILE = "current_user.json"

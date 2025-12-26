@@ -7,17 +7,11 @@ import json
 import sys
 import os
 import webbrowser  # für anklickbare Links
-from dotenv import load_dotenv
 
 # ----- Supabase Setup -----
-
-load_dotenv()
-
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
-
+SUPABASE_URL = "https://vaxelbftwysyecnwwbpq.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZheGVsYmZ0d3lzeWVjbnd3YnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3NjI3NDgsImV4cCI6MjA4MjMzODc0OH0.cEE1dJ8I1bJ0m9cR3ezpVGILApQN_crxWpsrwe7hXi8"
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
 
 OWNER_USERNAME = "Owner"
 USER_JSON_FILE = "current_user.json"
@@ -345,7 +339,7 @@ def show_login_with_agb():
             reg_btn.config(state="normal")
             del_btn.config(state="normal")
 
-        tk.Button(popup, text="Fortfahren", width=15, height=3, font=("Segoe UI", 11, "bold"), command=proceed).pack(pady=15)
+        tk.Button(popup, text="Fortfahren", width=15, command=proceed).pack(pady=20)
 
     if not os.path.exists(FIRST_RUN_FILE):
         show_first_run_popup()
