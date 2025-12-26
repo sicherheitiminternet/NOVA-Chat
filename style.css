@@ -1,0 +1,21 @@
+body { 
+    font-family: Arial, sans-serif; 
+    line-height: 1.6; 
+    margin: 20px; 
+    background-color: #e6f0fa; /* hellblauer Hintergrund */
+    color: #003366; /* dunkelblau Text */
+}
+
+h1, h2 { 
+    color: #0059b3; /* kräftiger Blau-Ton für Überschriften */
+}
+
+a { 
+    color: #0073e6; /* hellblauer Link */
+    text-decoration: underline; 
+    cursor: pointer; 
+}
+
+ul { 
+    margin-left: 20px; 
+}
