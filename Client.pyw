@@ -259,23 +259,6 @@ class ChatClient:
         )
         title.pack(pady=(20, 15))
 
-        # Buttons hier IMMER im Fenster erstellen
-        # Radio-Button
-        radio_pil = Image.open("Musik Player-icon.png")
-        self.radio_icon = ctk.CTkImage(light_image=radio_pil, dark_image=radio_pil, size=(32, 32))
-        self.radio_button = ctk.CTkButton(
-            self.settings_window,  # <- richtiges Fenster
-            text="Musik Player starten",
-            command=self.open_radio,
-            image=self.radio_icon,
-            compound="left",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            width=220,
-            height=40,
-            corner_radius=10
-        )
-        self.radio_button.pack(pady=8, padx=10)
-
         # Dark/Light Button
         light_pil = Image.open("Color-icon.png")
         self.light_icon = ctk.CTkImage(light_image=light_pil, dark_image=light_pil, size=(32, 32))
@@ -311,14 +294,6 @@ class ChatClient:
         # Schließen-Event
         self.settings_window.protocol("WM_DELETE_WINDOW", self.on_settings_close)
 
-
-
-
-    def open_radio(self):
-        try:
-            subprocess.Popen(["pythonw", "Musik_Player.pyw"])
-        except Exception as e:
-            self._append_message(f"❌ Musik Player konnte nicht gestartet werden: {e}", "white")
             
     def toggle_border_mode(self):
         if self.border_mode == "blue":

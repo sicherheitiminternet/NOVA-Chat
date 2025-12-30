@@ -6,6 +6,7 @@ import os
 from mutagen import File
 import json
 from supabase import create_client
+import sys
 
 # =====================
 # Supabase Setup
@@ -53,16 +54,17 @@ repeat_enabled = False
 CURRENT_USER_ID = None  # wird automatisch aus JSON gesetzt
 
 # =====================
-# User-ID aus JSON laden
+# CURRENT_USER_ID setzen
 # =====================
-USER_JSON = "current_user.json"
-if os.path.exists(USER_JSON):
-    with open(USER_JSON, "r", encoding="utf-8") as f:
-        data = json.load(f)
-        CURRENT_USER_ID = data.get("user_id")
+if len(sys.argv) > 1:
+    CURRENT_USER_ID = sys.argv[1]  # User-ID vom Login
 else:
-    messagebox.showerror("Fehler", "Keine eingeloggten User gefunden! Bitte zuerst Login ausführen.")
-    exit()
+    # Fallback auf JSON
+    USER_JSON = "current_user.json"
+    if os.path.exists(USER_JSON):
+        with open(USER_JSON, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            CURRENT_USER_ID = data.get("user_id")
 
 # =====================
 # Songfunktionen
