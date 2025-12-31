@@ -13,8 +13,8 @@ Dieses Repository enthält **NOVA-Chat**. Bitte lesen Sie die **AGB** (`agb.html
 
 1. Repository herunterladen:  
    Klicken Sie auf „Code → Download ZIP“ oder nutzen Sie Git:  
-   ```bash
-   git clone https://github.com/Sicherheit-Im-Internet/Sicherheit-im-Internet.git
+
+   `git clone https://github.com/Sicherheit-Im-Internet/Sicherheit-im-Internet.git`
 
 2. Falls Sie das Repository als ZIP-Datei heruntergeladen haben, **entpacken Sie diese auf Ihrem Computer**.
 
@@ -28,12 +28,12 @@ Dieses Repository enthält **NOVA-Chat**. Bitte lesen Sie die **AGB** (`agb.html
 
 
 `pip install pywebview`
-pip install customtkinter
-pip install python-vlc
-pip install mutagen
-pip install supabase
-pip install bcrypt
-pip install pillow
+`pip install customtkinter`
+`pip install python-vlc`
+`pip install mutagen`
+`pip install supabase`
+`pip install bcrypt`
+`pip install pillow`
 
 
 ## 5. Updates
