@@ -126,7 +126,8 @@ class ChatClient:
         self.context_menu = tk.Menu(self.master, tearoff=0)
         self.context_menu.add_command(label="Nachricht anpinnen", command=self.pin_selected_message)
         self.context_menu.add_command(label="Angepinnt entfernen", command=self.unpin_message)
-
+        self.context_menu.add_command(label="Nachricht löschen", command=self.delete_selected_message)
+        
         # Eingabefeld & Buttons
         self.input_frame = tk.Frame(self.inner_frame, bg=self.bg_color)
         self.input_frame.pack(fill=tk.X, padx=5, pady=(0, 10))
@@ -322,7 +323,26 @@ class ChatClient:
         import colorsys
         return colorsys.hsv_to_rgb(h, s, v)
 
+    def delete_selected_message(self):
+        if hasattr(self, "selected_line") and self.selected_line:
+            try:
+                # Prüfen, ob Owner oder eigene Nachricht
+                if self.username.lower() == "owner" or self.selected_line.startswith(f"{self.username}:"):
+                    self.client_socket.send(f"DELETE|{self.selected_line}".encode("utf-8"))
+                else:
+                    self._append_message("❌ Du kannst nur deine eigenen Nachrichten löschen.", "white")
+            except Exception as e:
+                self._append_message(f"❌ Fehler beim Löschen: {e}", "white")
 
+    def _remove_message(self, message):
+        # Finde genau die Zeile im Text-Widget
+        index = self.chat_area.search(message, "1.0", tk.END)
+        if index:
+            line_start = f"{index.split('.')[0]}.0"
+            line_end = f"{index.split('.')[0]}.end+1c"
+            self.chat_area.config(state=tk.NORMAL)
+            self.chat_area.delete(line_start, line_end)
+            self.chat_area.config(state=tk.DISABLED)
 
     # Restlicher Code unverändert...
     def change_bg(self, color):
@@ -424,10 +444,18 @@ class ChatClient:
             try:
                 msg = self.client_socket.recv(1024).decode('utf-8')
                 if msg:
+                    # 1️⃣ Prüfen, ob Nachricht gelöscht werden soll
+                    if msg.startswith("DELETE|"):
+                        msg_to_delete = msg.split("|", 1)[1]
+                        self._remove_message(msg_to_delete)
+                        continue  # weiter zur nächsten Nachricht
+
+                    # 2️⃣ Prüfen, ob Nachricht angepinnt wird
                     if msg.startswith("PIN|"):
                         pinned_text = msg.split("|", 1)[1]
                         self.pinned_message.config(text=pinned_text)
                     else:
+                        # 3️⃣ Normale Nachricht verarbeiten
                         if "|" in msg:
                             color, text = msg.split("|", 1)
                         else:
@@ -435,7 +463,6 @@ class ChatClient:
                         self._append_message(text, name_color=color)
             except:
                 break
-
     def send_message(self, event=None):
         msg = self.msg_entry.get()
         if msg.strip() != "":

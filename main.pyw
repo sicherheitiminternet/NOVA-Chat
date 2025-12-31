@@ -40,28 +40,55 @@ def register_user(username, password):
         return False
 
 def check_login(username, password):
-    result = supabase.table("users").select("id, password, banned").eq("username", username).execute()
+    result = supabase.table("users").select("id, password, banned, ban_reason, ban_expiry").eq("username", username).execute()
     data = result.data
     if not data:
-        return None, False
-    db_password = data[0]["password"]
-    banned = data[0]["banned"]
-    user_id = data[0]["id"]
+        return None, False, None, None
+
+    user = data[0]
+    db_password = user["password"]
+    banned = user["banned"]
+    reason = user.get("ban_reason")
+    expiry = user.get("ban_expiry")
+    user_id = user["id"]
+
+    # Passwort korrekt?
+    if not bcrypt.checkpw(password.encode(), db_password.encode()):
+        return None, False, None, None
+
+    # Prüfen, ob gebannt
     if banned:
-        return None, True
-    if bcrypt.checkpw(password.encode(), db_password.encode()):
-        return user_id, False
-    return None, False
+        # expiry eventuell in datetime konvertieren
+        from datetime import datetime
+        if expiry is None:
+            expiry_val = "permanent"
+        else:
+            try:
+                expiry_dt = datetime.fromisoformat(expiry)
+                if expiry_dt >= datetime.max.replace(year=9999):
+                    expiry_val = "permanent"
+                else:
+                    expiry_val = expiry
+            except:
+                expiry_val = expiry
+        return None, True, reason, expiry_val
+
+    # Alles ok
+    return user_id, False, None, None
 
 def delete_user(username):
     supabase.table("users").delete().eq("username", username).execute()
 
 def ban_user(username, duration=None, reason="Kein Grund angegeben."):
+    from datetime import datetime, timedelta
+
     expiry = datetime.max if duration is None else datetime.now() + duration
+
     supabase.table("users").update({
-        "banned": True
+        "banned": True,
+        "ban_reason": reason,
+        "ban_expiry": expiry.isoformat()  # wichtig: ISO-Format für Strings in DB
     }).eq("username", username).execute()
-    # Optional: Grund und Ablauf separat speichern, z.B. in Tabelle banned_users
 
 def unban_user(username):
     supabase.table("users").update({"banned": False}).eq("username", username).execute()
@@ -122,16 +149,17 @@ def show_login():
     def show_first_run_popup():
         popup = tk.Toplevel(login_win)
         popup.title("Wichtige Information")
-        popup.geometry("400x200")
+        popup.geometry("400x300")
         popup.resizable(False, False)
         popup.grab_set()  # blockiert Interaktion mit Login
 
-        tk.Label(popup, text="Wenn du fortfährst, stimmst du unseren AGBs und der Datenschutzerklärung zu:",
+        tk.Label(popup, text="Wenn du fortfährst, stimmst du unseren AGBs, der Datenschutzerklärung und den Chat-Regeln zu:",
                  wraplength=380, justify="left").pack(pady=10)
 
         def open_agb(): webbrowser.open("agb.html")
         def open_privacy(): webbrowser.open("datenschutz.html")
-
+        def open_chat_rules(): webbrowser.open("chat_rules.html")  # neues File
+        
         agb_link = tk.Label(popup, text="AGB", fg="blue", cursor="hand2")
         agb_link.pack()
         agb_link.bind("<Button-1>", lambda e: open_agb())
@@ -139,9 +167,14 @@ def show_login():
         privacy_link = tk.Label(popup, text="Datenschutzerklärung", fg="blue", cursor="hand2")
         privacy_link.pack()
         privacy_link.bind("<Button-1>", lambda e: open_privacy())
+        
+        chat_link = tk.Label(popup, text="Chat-Regeln", fg="blue", cursor="hand2")
+        chat_link.pack()
+        chat_link.bind("<Button-1>", lambda e: open_chat_rules())
 
         agree_var = tk.BooleanVar()
         tk.Checkbutton(popup, text="Ich stimme zu", variable=agree_var).pack(pady=10)
+
 
         def proceed():
             if not agree_var.get():
@@ -176,16 +209,27 @@ def do_login():
         messagebox.showerror("Fehler", "Benutzername und Passwort dürfen nicht leer sein.")
         return
 
-    user_id, banned = check_login(username, password)
+    user_id, banned, reason, expiry = check_login(username, password)
+
     if banned:
-        messagebox.showerror("Gebannt", "Dieser Benutzer wurde gebannt ❌")
+        msg = "Du wurdest gebannt ❌"
+        if reason:
+            msg += f"\nGrund: {reason}"
+        if expiry:
+            # Prüfen, ob permanent
+            if expiry == "permanent" or expiry == datetime.max.isoformat():
+                msg += "\nBis: permanent"
+            else:
+                msg += f"\nBis: {expiry}"
+        messagebox.showerror("Gebannt", msg)
         return
+
     if user_id:
         login_win.destroy()
-        start_hub(username, user_id)  # <-- User-ID direkt übergeben
+        start_hub(username, user_id)
     else:
         messagebox.showerror("Fehler", "Benutzername oder Passwort ist falsch.")
-
+        
 def show_register():
     reg_win = tk.Toplevel()
     reg_win.title("Registrieren")
@@ -294,6 +338,22 @@ def start_hub(username, user_id):
         activeforeground="white",
         command=open_blank_window
     ).place(relx=1.0, y=20, anchor="ne", x=-10)
+    
+    
+    
+    tk.Button(
+        main_frame,
+        text="Feedback",
+        width=20,
+        font=("Arial", 10, "bold"),
+        bg="green",
+        fg="white",
+        activebackground="green",
+        activeforeground="white",
+        command=lambda: start_external_feedback(username)  # Username vom Hub übergeben
+    ).place(relx=1.0, y=60, anchor="ne", x=-10)
+
+
 
     if is_owner:
         console(main_frame)  # falls du die Owner-Konsole nutzen willst
@@ -315,10 +375,9 @@ def open_blank_window():
     scroll_text = scrolledtext.ScrolledText(news_win, wrap=tk.WORD, font=("Arial", 12))
     scroll_text.pack(fill="both", expand=True, padx=10, pady=10)
 
-    scroll_text.insert(tk.END, "- Der Dateimanager ist wieder verfügbar.\n\n")
-    scroll_text.insert(tk.END, "- Es wurden zwei neue Programme hinzugefügt.\n")
-    scroll_text.insert(tk.END, "- Ihr könnt sie über die neuen Buttons Stopuhr und Timer ansehen und benutzen.\n\n")
-    scroll_text.insert(tk.END, "- Der Taschenrechner ist wieder verfügbar.\n\n")
+    scroll_text.insert(tk.END, "- Neuer Hub.\n\n")
+    scroll_text.insert(tk.END, "- Musik Player ist jetzt direkt im Hub zu finden.\n\n")
+    scroll_text.insert(tk.END, "- Viele Neue Neuerungen wo sie selbst entdecken können.\n\n")
     for _ in range(10):
         scroll_text.insert(tk.END, "- Hier kann etwas angezeigt werden!\n\n")
     scroll_text.config(state=tk.DISABLED)
@@ -333,6 +392,13 @@ def start_external_server():
 
 def start_external_MusikPlayer(user_id):
     subprocess.Popen([sys.executable, os.path.join(os.getcwd(), "Musik_Player.pyw"), str(user_id)])
+
+def start_external_feedback(username):
+    # Pfad zum externen Script (z. B. im gleichen Verzeichnis)
+    script_path = os.path.join(os.getcwd(), "feedback.pyw")
+    # Das Script mit dem aktuellen Python-Interpreter starten und Username als Argument übergeben
+    subprocess.Popen([sys.executable, script_path, username])
+
 
 
 # ----- Footer -----
@@ -490,17 +556,45 @@ def console(parent_frame):
             parts = cmd.split()
             if len(parts) < 3:
                 help_label.config(text="Syntax: /resetpassword benutzername neuesPasswort")
+            else:
+                username = parts[1]
+                new_password = " ".join(parts[2:])
+
+                try:
+                    result = supabase.table("users").select("id").eq("username", username).execute()
+                    if not result.data:
+                        help_label.config(text=f"{username} existiert nicht.")
+                    else:
+                        password_hash = bcrypt.hashpw(
+                            new_password.encode("utf-8"),
+                            bcrypt.gensalt()
+                        ).decode("utf-8")
+
+                        supabase.table("users").update({
+                            "password": password_hash
+                        }).eq("username", username).execute()
+
+                        help_label.config(
+                            text=f"Passwort von {username} wurde sicher zurückgesetzt 🔐",
+                            fg="green"
+                        )
+                except Exception as e:
+                    help_label.config(text=f"Fehler: {e}")
+        # --- /deleteuser ---
+        elif cmd.startswith("/deleteuser"):
+            parts = cmd.split()
+            if len(parts) < 2:
+                help_label.config(text="Syntax: /deleteuser benutzername")
                 console_entry.delete(0, tk.END)
                 return
-            username = parts[1]
-            new_password = " ".join(parts[2:])
+            username_to_delete = parts[1]
             try:
-                result = supabase.table("users").select("*").eq("username", username).execute()
+                result = supabase.table("users").select("id").eq("username", username_to_delete).execute()
                 if not result.data:
-                    help_label.config(text=f"{username} existiert nicht.")
+                    help_label.config(text=f"{username_to_delete} existiert nicht.")
                 else:
-                    supabase.table("users").update({"password": new_password}).eq("username", username).execute()
-                    help_label.config(text=f"Passwort von {username} zurückgesetzt.", fg="green")
+                    supabase.table("users").delete().eq("username", username_to_delete).execute()
+                    help_label.config(text=f"{username_to_delete} wurde gelöscht ✅", fg="green")
             except Exception as e:
                 help_label.config(text=f"Fehler: {e}")
             console_entry.delete(0, tk.END)
@@ -508,26 +602,30 @@ def console(parent_frame):
         # --- /help ---
         elif cmd.startswith("/help"):
             commands = {
-                "/ban": "Bannen eines Benutzers: /ban Name [Dauer...] [optional: Grund]",
-                "/unban": "Entbannen eines Benutzers: /unban benutzername",
-                "/rename": "Benutzer umbenennen: /rename alterName neuerName",
-                "/resetpassword": "Passwort zurücksetzen: /resetpassword benutzername neuesPasswort",
-                "/listbans": "Liste aller gebannten Benutzer: /listbans",
-                "/help": "Zeigt alle Befehle: /help [befehl]"
+                "/ban": "Bannen eines Benutzers",
+                "/unban": "Entbannen eines Benutzers",
+                "/rename": "Benutzer umbenennen",
+                "/resetpassword": "Passwort zurücksetzen",
+                "/listbans": "Gebannte Benutzer anzeigen",
+                "/deleteuser": "Benutzer Löschen", 
+                "/help": "Hilfe anzeigen"
             }
             parts = cmd.split()
             if len(parts) == 1:
-                help_text = "Verfügbare Befehle:\n" + "\n".join(commands.keys())
-            elif len(parts) == 2:
-                help_text = commands.get(parts[1], f"Keine Beschreibung für {parts[1]}")
-            help_label.config(text=help_text)
-            console_entry.delete(0, tk.END)
+                help_label.config(text="Verfügbare Befehle:\n" + "\n".join(commands.keys()))
+            else:
+                help_label.config(text=commands.get(parts[1], "Unbekannter Befehl"))
 
         else:
-            help_label.config(text="Unbekannter Befehl. Befehle: /ban, /unban, /rename, /resetpassword, /listbans, /help")
-            console_entry.delete(0, tk.END)
+            help_label.config(
+                text="Unbekannter Befehl. /help für Hilfe"
+            )
+    
+            # ✅ NUR EINMAL, GANZ AM ENDE
+        console_entry.delete(0, tk.END)
 
     console_entry.bind("<Return>", handle_console)
+
     
 # ----- Main -----
 if __name__ == "__main__":
