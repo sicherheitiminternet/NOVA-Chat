@@ -27,13 +27,13 @@ Dieses Repository enthält **NOVA-Chat**. Bitte lesen Sie die **AGB** (`agb.html
 * Python-Pakete installieren:
 
 
-`pip install pywebview`
-`pip install customtkinter`
-`pip install python-vlc`
-`pip install mutagen`
-`pip install supabase`
-`pip install bcrypt`
-`pip install pillow`
+- `pip install pywebview`
+- `pip install customtkinter`
+- `pip install python-vlc`
+- `pip install mutagen`
+- `pip install supabase`
+- `pip install bcrypt`
+- `pip install pillow`
 
 
 ## 5. Updates
