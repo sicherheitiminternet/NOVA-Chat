@@ -47,4 +47,4 @@ Der Chat wird **ohne Gewährleistung** bereitgestellt.
 Der Autor übernimmt **keine Haftung** für Schäden, Verluste oder sonstige Nachteile, die durch die Nutzung entstehen.
 Die Nutzung erfolgt **auf eigenes Risiko**.
 
-<p align="center"><strong>© NOVA-Chat</strong></p>
+<p align="center"><strong>© 2025 NOVA-Chat</strong></p>
