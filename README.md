@@ -37,7 +37,7 @@ Dieses Repository enthält NOVA-Chat. Bitte lesen Sie die AGB (`agb.html`) und d
 - `pip install supabase`
 - `pip install bcrypt`
 - `pip install pillow`
-- ´pip install supabase´
+- `pip install supabase`
 
 ## 5. Updates
 
