@@ -112,7 +112,7 @@ class ChatClient:
                 self.online_frame,
                 text="Online User",
                 font=("Segoe UI", 12, "bold"),
-                fg="white",
+                fg="blue",
                 bg="#11121a"
             )
             self.online_label.pack(pady=(0,5))
