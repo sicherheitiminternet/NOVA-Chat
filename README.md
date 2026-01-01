@@ -3,7 +3,7 @@
 ## 1. Lizenz
 
 Dieses Repository enthält die öffentliche Webseite für **NOVA-Chat**.  
-Bitte lesen Sie die **[AGB](https://sicherheitiminternet.github.io/NOVA-Website/agb.html)** und die **[Datenschutzerklärung](https://sicherheitiminternet.github.io/NOVA-Website/datenschutz.html)** direkt auf dieser Webseite.
+Bitte lesen Sie die **[AGB](https://sicherheitiminternet.github.io/NOVA-Website/agb.html)**, die **[Datenschutzerklärung](https://sicherheitiminternet.github.io/NOVA-Website/datenschutz.html)** und die **[Chat-Regeln](https://sicherheitiminternet.github.io/NOVA-Website/chat_rules.html)** direkt auf dieser Webseite.
 
 ## 2. Zulässige Nutzung
 
