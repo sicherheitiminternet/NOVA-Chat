@@ -228,7 +228,7 @@ volume_slider.pack(pady=10, fill="x", padx=20)
 # =====================
 # Footer
 # =====================
-footer = ctk.CTkLabel(root, text="© 2025 NOVA-Chat", font=("Segoe UI", 14, "bold"), text_color="white")
+footer = ctk.CTkLabel(root, text="© 2026 NOVA-Chat", font=("Segoe UI", 14, "bold"), text_color="white")
 footer.pack(side="bottom", pady=5)
 
 

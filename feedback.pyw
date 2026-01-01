@@ -116,7 +116,7 @@ def open_idea_system(username):
         refresh_list()  # Initiale Abfrage starten
 
     # Footer
-    tk.Label(win, text="© 2025 NOVA-Chat", font=("Segoe UI", 10, "bold"),
+    tk.Label(win, text="© 2026 NOVA-Chat", font=("Segoe UI", 10, "bold"),
              fg="black", bg=win.cget("bg")).pack(side="bottom", fill="x", pady=5)
 
 if __name__ == "__main__":

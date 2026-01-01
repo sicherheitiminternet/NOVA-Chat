@@ -183,7 +183,7 @@ class ChatClient:
 
         self.copyright_label = tk.Label(
             self.inner_frame,
-            text="© 2025 NOVA-Chat",
+            text="© 2026 NOVA-Chat",
             font=("Segoe UI", 12, "bold"),
             bg=self.bg_color,
             fg=self.text_color

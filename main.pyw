@@ -410,7 +410,7 @@ def start_external_feedback(username):
 def add_footer(window):
     tk.Label(
         window,
-        text="© 2025 NOVA-Chat",
+        text="© 2026 NOVA-Chat",
         font=("Segoe UI", 10, "bold"),
         fg="black"
     ).pack(side="bottom", fill="x")
