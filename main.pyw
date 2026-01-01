@@ -156,9 +156,14 @@ def show_login():
         tk.Label(popup, text="Wenn du fortfährst, stimmst du unseren AGBs, der Datenschutzerklärung und den Chat-Regeln zu:",
                  wraplength=380, justify="left").pack(pady=10)
 
-        def open_agb(): webbrowser.open("agb.html")
-        def open_privacy(): webbrowser.open("datenschutz.html")
-        def open_chat_rules(): webbrowser.open("chat_rules.html")  # neues File
+        def open_agb():
+            webbrowser.open("https://sicherheitiminternet.github.io/Nova-Chat-Webseite/agb.html")
+
+        def open_privacy():
+            webbrowser.open("https://sicherheitiminternet.github.io/Nova-Chat-Webseite/datenschutz.html")
+
+        def open_chat_rules():
+            webbrowser.open("https://sicherheitiminternet.github.io/Nova-Chat-Webseite/chat_rules.html")
         
         agb_link = tk.Label(popup, text="AGB", fg="blue", cursor="hand2")
         agb_link.pack()
