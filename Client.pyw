@@ -102,6 +102,35 @@ class ChatClient:
             wraplength=800
         )
         self.pinned_message.pack(fill=tk.BOTH, expand=True)
+        
+        
+        if self.username.lower() == "owner":
+            self.online_frame = tk.Frame(self.inner_frame, bg="#11121a", width=200)
+            self.online_frame.pack(side="right", fill=tk.Y, padx=(5,0), pady=5)
+    
+            self.online_label = tk.Label(
+                self.online_frame,
+                text="Online User",
+                font=("Segoe UI", 12, "bold"),
+                fg="white",
+                bg="#11121a"
+            )
+            self.online_label.pack(pady=(0,5))
+    
+            self.online_listbox = tk.Listbox(
+                self.online_frame,
+                bg="#1a1a1a",
+                fg="white",
+                font=("Segoe UI", 12),
+                width=20,
+                height=20,
+                activestyle="none",
+                highlightthickness=0,
+                selectbackground="#333333"
+            )
+            self.online_listbox.pack(fill=tk.Y, expand=True)
+
+
 
         # Chatbereich
         self.chat_area = tk.Text(
@@ -189,7 +218,28 @@ class ChatClient:
             fg=self.text_color
         )
         self.copyright_label.pack(side="bottom", pady=5)
+        
+    def update_online_users(self, user_list):
+        """
+        user_list: Liste von Strings, z.B. ["Alice", "Bob"]
+        Nur für Owner sichtbar
+        """
+        if self.username.lower() != "owner":
+            return
 
+        self.online_listbox.delete(0, tk.END)
+        for user in user_list:
+            self.online_listbox.insert(tk.END, user)
+            
+    def send_online_users():
+        user_list = ",".join(clients.values())  # kann auch leer sein
+        for c in clients:
+            try:
+                # ?? Immer schicken, auch wenn leer
+                c.send(f"ONLINE|{user_list}\n".encode("utf-8"))
+            except:
+                pass
+                
     def toggle_chat_color(self):
         if self.bg_color == "#000000":  # Schwarz → Weiß
             self.bg_color = "#FFFFFF"
@@ -444,25 +494,35 @@ class ChatClient:
             try:
                 msg = self.client_socket.recv(1024).decode('utf-8')
                 if msg:
-                    # 1️⃣ Prüfen, ob Nachricht gelöscht werden soll
+                    # ?? ONLINE-LISTE aktualisieren
+                    if msg.startswith("ONLINE|"):
+                        users = msg.split("|", 1)[1].split(",") if "|" in msg else []
+                        self.update_online_users(users)
+                        continue
+
+                    # ?? DELETE Nachricht
                     if msg.startswith("DELETE|"):
                         msg_to_delete = msg.split("|", 1)[1]
                         self._remove_message(msg_to_delete)
-                        continue  # weiter zur nächsten Nachricht
+                        continue
 
-                    # 2️⃣ Prüfen, ob Nachricht angepinnt wird
+                    # ?? PINNED MESSAGE
                     if msg.startswith("PIN|"):
                         pinned_text = msg.split("|", 1)[1]
                         self.pinned_message.config(text=pinned_text)
+                        continue
+
+                    # ?? Normale Nachricht
+                    if "|" in msg:
+                        color, text = msg.split("|", 1)
                     else:
-                        # 3️⃣ Normale Nachricht verarbeiten
-                        if "|" in msg:
-                            color, text = msg.split("|", 1)
-                        else:
-                            color, text = "white", msg
-                        self._append_message(text, name_color=color)
-            except:
+                        color, text = "white", msg
+                    self._append_message(text, name_color=color)
+
+            except Exception as e:
+                print(f"Fehler beim Empfangen: {e}")
                 break
+
     def send_message(self, event=None):
         msg = self.msg_entry.get()
         if msg.strip() != "":
