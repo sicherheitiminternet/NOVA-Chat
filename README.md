@@ -53,7 +53,7 @@ Die Nutzung erfolgt **auf eigenes Risiko**.
 ![Das ist der Hub.](images/Screenshot_140031.png)
 ![Das ist der Hub mit dem Musik Player.](images/Screenshot_140325.png)
 ![Das ist der Client mit der Standart-farbe.](images/Screenshot_Client_Standard.png)
-![Das ist der Client mit Weiss.](images/Screenshot_Client_Weiss.png)
+![Das ist der Client mit Weiss.](images/Screenshot_Client_Weiss.jpg)
 
 
 
