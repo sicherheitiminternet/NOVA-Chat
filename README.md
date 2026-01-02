@@ -50,10 +50,11 @@ Die Nutzung erfolgt **auf eigenes Risiko**.
 
 ## 7. Bilder vom Projekt
 
-![Das ist der Hub.](images/Screenshot 2026-01-02 140031.png)
-![Das ist der Hub mit dem Musik Player.](images/Screenshot 2026-01-02 140325.png)
-![Das ist der Client mit der Standart-farbe.](images/Screenshot 2026-01-02 140136.png)
-![Das ist der Client mit Weiss.](images/Screenshot 2026-01-02 140237.png)
+![Das ist der Hub.](images/Screenshot_140031.png)
+![Das ist der Hub mit dem Musik Player.](images/Screenshot_140325.png)
+![Das ist der Client mit der Standart-farbe.](images/Screenshot_Client_Standard.png)
+![Das ist der Client mit Weiss.](images/Screenshot_Client_Weiss.png)
+
 
 
 <p align="center"><strong>© 2026 NOVA-Chat</strong></p>
